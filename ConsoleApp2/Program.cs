@@ -48,7 +48,7 @@ namespace ConsoleApp2
 
                 pressedKey = Console.ReadKey();
                 Console.ForegroundColor = ConsoleColor.Gray;
-                //a = Console.ReadKey();
+                
                 if(pressedKey.Key == ConsoleKey.D1 || pressedKey.Key == ConsoleKey.D2 || pressedKey.Key == ConsoleKey.D3)
                 {
                     a = pressedKey;
