@@ -61,7 +61,7 @@ namespace ConsoleApp2
                 }
             }
             while (pressedKey.Key != ConsoleKey.Enter);
-            //Console.WriteLine("Излязох.");
+           
             if(a == default)
             {
                 throw new Exception("Не сте избрали опция.");
@@ -84,14 +84,15 @@ namespace ConsoleApp2
         {
             using (var db = new ChatContext())
             {
+                Console.CursorVisible = true;
                 Console.Clear();
-               // Console.WriteLine(db.DbPath); //data baza papka
+                //Console.WriteLine(db.DbPath); //data baza papka  / C:\Users\User\AppData\Local\blogging.db
                 var newUser = new User();
                 Console.WriteLine("Въведете потребителско име:");
                 string username =  Console.ReadLine();
                 if (Regex.IsMatch(username, "^[A-Za-z0-9_]{5,35}$") == false)
                 {
-                    throw new Exception($"Потробителското име трябва да съдържа от 5 до 35 символа и да е с бъкви, цифри или долна черта.");
+                    throw new Exception($"Потробителското име трябва да съдържа от 5 до 35 символа и да е с букви, цифри или долна черта.");
                 }
                 newUser.Username = username;
                 Console.WriteLine("Въведете парола:");
@@ -142,6 +143,7 @@ namespace ConsoleApp2
         {
              using(var db = new ChatContext())
             {
+                Console.CursorVisible = true;
                 Console.Clear();
 
                 string f = "Потребител:";
@@ -168,7 +170,7 @@ namespace ConsoleApp2
                 {
                     Console.Clear();
                     Console.CursorVisible = false;
-                    string fText = "Влязохте в акаунта си.";
+                    string fText = $" Влязохте в акаунта си.";
                     CenterText(fText, 1);
                     Console.WriteLine(fText);
                     Thread.Sleep(2000);
@@ -177,10 +179,9 @@ namespace ConsoleApp2
                     
                     int b = fText.Length > welcome.Length ? fText.Length : welcome.Length;                  
                     CenterText(welcome, 1);
-                    Console.WriteLine(welcome.PadRight(b));
+                    Console.WriteLine(welcome.PadRight(b).PadLeft(b));
 
-                    Thread.Sleep(5000);
-                    Menu();
+                    Thread.Sleep(5000);                    
 
                 }
                 else
@@ -224,8 +225,9 @@ namespace ConsoleApp2
         {
             using (var db = new ChatContext())
             {
+                Console.CursorVisible = true;
                 Console.Clear();
-                Console.WriteLine("Въведете потребителскот си име:");
+                Console.WriteLine("Въведете потребителскотo си име:");
                 string username = Console.ReadLine();
                 Console.WriteLine("Въведете вашето ID:");
                 int id = int.Parse(Console.ReadLine());
@@ -235,13 +237,52 @@ namespace ConsoleApp2
                 {
                     Console.WriteLine();
                     Console.WriteLine("Объркахте нещо.");
+                    Thread.Sleep(5000);
+                    ForgotenPassword();
                 }
                 else
                 {
                     Console.WriteLine($"Вашата парола е: {Decrypt(a[0].Password)}");
-                    Thread.Sleep(5000);
-                    Menu();
+                    Thread.Sleep(8000);
+                    LogInAccount();
+                    ChangePassword();
                 }
+            }
+        }
+        public static void ChangePassword()
+        {
+            using (var db = new ChatContext())
+            {
+                
+                    Console.Clear();
+                    Console.WriteLine("Смяна на парола");
+                    Console.WriteLine("_______________");
+                    Console.WriteLine();
+                    Console.WriteLine("Потребител:");
+                    string username = Console.ReadLine();
+                    Console.WriteLine("ID:");
+                    int id = int.Parse(Console.ReadLine());
+                    Console.WriteLine("Стара парола:");
+                    string oldPassword = Console.ReadLine();
+
+                    var loggedUser = db.Users.Where(user => user.Username == username && user.Password == Crypt(oldPassword) && user.Id == id).ToArray();
+                    if(loggedUser.Length != 0)
+                    {
+                        Console.WriteLine("Нова парола:");
+                        string newPassword = Console.ReadLine();
+                        loggedUser[0].Password = Crypt(newPassword);
+                        db.SaveChanges();
+                        Console.WriteLine();
+                        Console.WriteLine("Успешно променихте паролата си.");
+                        Thread.Sleep(5000);
+                        LogInAccount();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Бъркате нещо.");
+                        Thread.Sleep(5000);
+                        ChangePassword();
+                    }
             }
         }
 
