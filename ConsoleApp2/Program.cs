@@ -161,10 +161,36 @@ namespace ConsoleApp2
 
                 string username = Console.ReadLine();
                 CenterText(f, 5, 5);
-                string password = Console.ReadLine();
-               
                 
-                var a = db.Users.Where(user => user.Username == username && user.Password == Crypt(password)).ToArray();
+
+                string password = null;
+                int countChar = (Console.WindowWidth - f.Length) / 2;
+                while (true)
+                {
+
+                    var key = Console.ReadKey();
+                    if (key.Key == ConsoleKey.Enter)
+                    {
+                        Console.WriteLine();
+                        break;
+                    }
+                    if (key.Key == ConsoleKey.Backspace && password.Length > 0)
+                    {
+                        password = password.Remove(password.Length - 1, 1);
+                        countChar--;
+                        Console.SetCursorPosition(countChar, 19);
+                        Console.Write('_');
+                    }
+                    else
+                    {
+                        password += key.KeyChar;
+                        Console.SetCursorPosition(countChar, 19);
+                        Console.Write('*');
+                        countChar++;
+                    }
+                }
+
+                    var a = db.Users.Where(user => user.Username == username && user.Password == Crypt(password)).ToArray();
                
                 if(a.Length >= 1)
                 {
