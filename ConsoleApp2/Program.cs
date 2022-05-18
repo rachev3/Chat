@@ -289,13 +289,66 @@ namespace ConsoleApp2
                     Console.WriteLine("ID:");
                     int id = int.Parse(Console.ReadLine());
                     Console.WriteLine("Стара парола:");
-                    string oldPassword = Console.ReadLine();
+                    
+                    string oldPassword = null;
+                    int countChar = 0;
+                    while (true)
+                    {
 
-                    var loggedUser = db.Users.Where(user => user.Username == username && user.Password == Crypt(oldPassword) && user.Id == id).ToArray();
+                        var key = Console.ReadKey();
+                        if (key.Key == ConsoleKey.Enter)
+                        {
+                            Console.WriteLine();
+                            break;
+                        }
+                        if (key.Key == ConsoleKey.Backspace && oldPassword.Length > 0)
+                        {
+                            oldPassword = oldPassword.Remove(oldPassword.Length - 1, 1);
+                            countChar--;
+                            Console.SetCursorPosition(countChar, 8);
+                            Console.Write(' ');
+                        }
+                        else
+                        {
+                            oldPassword += key.KeyChar;
+                            Console.SetCursorPosition(countChar, 8);
+                            Console.Write('*');
+                            countChar++;
+                        }
+                    }
+
+                 var loggedUser = db.Users.Where(user => user.Username == username && user.Password == Crypt(oldPassword) && user.Id == id).ToArray();
                     if(loggedUser.Length != 0)
                     {
                         Console.WriteLine("Нова парола:");
-                        string newPassword = Console.ReadLine();
+
+                            string newPassword = null;
+                            int count = 0;
+                            while (true)
+                            {
+
+                                var key = Console.ReadKey();
+                                if (key.Key == ConsoleKey.Enter)
+                                {
+                                    Console.WriteLine();
+                                    break;
+                                }
+                                if (key.Key == ConsoleKey.Backspace && newPassword.Length > 0)
+                                {
+                                    newPassword = newPassword.Remove(newPassword.Length - 1, 1);
+                                    count--;
+                                    Console.SetCursorPosition(count, 10);
+                                    Console.Write(' ');
+                                }
+                                else
+                                {
+                                    newPassword += key.KeyChar;
+                                    Console.SetCursorPosition(count, 10);
+                                    Console.Write('*');
+                                    count++;
+                                }
+                            }
+                         
                         loggedUser[0].Password = Crypt(newPassword);
                         db.SaveChanges();
                         Console.WriteLine();
