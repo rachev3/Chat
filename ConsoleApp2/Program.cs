@@ -12,7 +12,7 @@ namespace ConsoleApp2
             try
             {
                 Console.Title = "Chat";
-                Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
+                Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);  //33,137
                 Console.CancelKeyPress += new ConsoleCancelEventHandler(MyHandler);
                 Menu();
             }
@@ -33,8 +33,7 @@ namespace ConsoleApp2
 
         public static void Menu()
         {
-            Console.Clear();
-
+            Console.Clear();           
             PrintMenuOption();
 
             ConsoleKeyInfo a = default;
@@ -168,6 +167,7 @@ namespace ConsoleApp2
 
                     Thread.Sleep(5000);
 
+                    Account(a[0]);
                 }
                 else
                 {
@@ -206,10 +206,23 @@ namespace ConsoleApp2
                 }
             }
         }
+        public static void Account(User user)
+        {
+            using (var db = new ChatContext())
+            {
+                Console.Clear();
+                Console.SetCursorPosition(0, 0);
+                Console.WriteLine(user.Username);
+                Console.SetCursorPosition(0,31); //130,31
+                Console.WriteLine($"{DateTime.Today}");
+                Console.ReadKey();
+            }
+        }
         public static void ForgotenPassword()
         {
             using (var db = new ChatContext())
             {
+                Console.ForegroundColor = ConsoleColor.Gray;
                 Console.CursorVisible = true;
                 Console.Clear();
                 Console.WriteLine("Въведете потребителскотo си име:");
@@ -220,17 +233,18 @@ namespace ConsoleApp2
                 var a = db.Users.Where(user => user.Username == username && user.Id == id).ToArray();
                 if (a.Length == 0)
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine();
-                    Console.WriteLine("Объркахте нещо.");
-                    Thread.Sleep(5000);
+                    Console.WriteLine("Бъркате нещо.");
+                    Thread.Sleep(2000);
                     ForgotenPassword();
                 }
                 else
                 {
                     Console.WriteLine($"Вашата парола е: {Decrypt(a[0].Password)}");
                     Thread.Sleep(8000);
-                    LogInAccount();
-                    ChangePassword();
+                    Menu();
+                    
                 }
             }
         }
@@ -264,7 +278,7 @@ namespace ConsoleApp2
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Старата и новата парола съвпадат.");
                         Thread.Sleep(3000);
-                        ChangePassword();
+                        ChangePassword();                       
                     }
 
                     loggedUser[0].Password = Crypt(newPassword);
@@ -272,7 +286,7 @@ namespace ConsoleApp2
                     Console.WriteLine();
                     Console.WriteLine("Успешно променихте паролата си.");
                     Thread.Sleep(5000);
-                    LogInAccount();
+                    Menu();
                 }
                 else
                 {
