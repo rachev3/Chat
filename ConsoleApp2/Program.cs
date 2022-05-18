@@ -13,7 +13,7 @@ namespace ConsoleApp2
             {
                 Console.Title = "Chat";
                 Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
-                Console.CancelKeyPress += new ConsoleCancelEventHandler(myHandler);
+                Console.CancelKeyPress += new ConsoleCancelEventHandler(MyHandler);
                 Menu();
             }
             catch (Exception ex)
@@ -105,42 +105,19 @@ namespace ConsoleApp2
                     CreateAccount();
                 }
                 newUser.Username = username;
-                Console.WriteLine("Въведете парола:");
-                string password = null;
-                int countChar = 0;
-                while (true)
-                {
 
-                    var key = Console.ReadKey();
-                    if (key.Key == ConsoleKey.Enter)
-                    {
-                        Console.WriteLine();
-                        break;
-                    }
-                    if (key.Key == ConsoleKey.Backspace && password.Length > 0)
-                    {
-                        password = password.Remove(password.Length - 1, 1);
-                        countChar--;
-                        Console.SetCursorPosition(countChar, 3);
-                        Console.Write(' ');
-                    }
-                    else
-                    {
-                        password += key.KeyChar;
-                        Console.SetCursorPosition(countChar, 3);
-                        Console.Write('*');
-                        countChar++;
-                    }
-                }
+                Console.WriteLine("Въведете парола:");               
+                string password = PasswordCover(0,3);               
                 newUser.Password = Crypt(password);
+
                 Console.WriteLine("Въведете име:");
                 newUser.Names = Console.ReadLine();
+
                 db.Users.Add(newUser);
                 db.SaveChanges();
 
                 // var user = db.Users.AsEnumerable().LastOrDefault();
 
-                // Console.WriteLine(newUser.Id);
                 Console.Clear();
                 string congrat = $"Успешно създадохте вашият акаунт. Вашият идентификационен номер е: {newUser.Id}";
                 CenterText(congrat, 1);
@@ -171,35 +148,8 @@ namespace ConsoleApp2
 
                 string username = Console.ReadLine();
                 CenterText(f, 5, 5);
-
-
-                string password = null;
-                int countChar = (Console.WindowWidth - f.Length) / 2;
-                while (true)
-                {
-
-                    var key = Console.ReadKey();
-                    if (key.Key == ConsoleKey.Enter)
-                    {
-                        Console.WriteLine();
-                        break;
-                    }
-                    if (key.Key == ConsoleKey.Backspace && password.Length > 0)
-                    {
-                        password = password.Remove(password.Length - 1, 1);
-                        countChar--;
-                        Console.SetCursorPosition(countChar, 19);
-                        Console.Write('_');
-                    }
-                    else
-                    {
-                        password += key.KeyChar;
-                        Console.SetCursorPosition(countChar, 19);
-                        Console.Write('*');
-                        countChar++;
-                    }
-                }
-
+                string password = PasswordCover((Console.WindowWidth - f.Length) / 2,19);
+                
                 var a = db.Users.Where(user => user.Username == username && user.Password == Crypt(password)).ToArray();
 
                 if (a.Length >= 1)
@@ -210,7 +160,6 @@ namespace ConsoleApp2
                     CenterText(fText, 1);
                     Console.WriteLine(fText);
                     Thread.Sleep(2000);
-                    //Console.Clear();
                     string welcome = $"Добре дошли, {a[0].Names}!";
 
                     int b = fText.Length > welcome.Length ? fText.Length : welcome.Length;
@@ -301,63 +250,15 @@ namespace ConsoleApp2
                 int id = int.Parse(Console.ReadLine());
                 Console.WriteLine("Стара парола:");
 
-                string oldPassword = null;
-                int countChar = 0;
-                while (true)
-                {
-                    var key = Console.ReadKey();
-                    if (key.Key == ConsoleKey.Enter)
-                    {
-                        Console.WriteLine();
-                        break;
-                    }
-                    if (key.Key == ConsoleKey.Backspace && oldPassword.Length > 0)
-                    {
-                        oldPassword = oldPassword.Remove(oldPassword.Length - 1, 1);
-                        countChar--;
-                        Console.SetCursorPosition(countChar, 8);
-                        Console.Write(' ');
-                    }
-                    else
-                    {
-                        oldPassword += key.KeyChar;
-                        Console.SetCursorPosition(countChar, 8);
-                        Console.Write('*');
-                        countChar++;
-                    }
-                }
+                string oldPassword = PasswordCover(0, 8);
+                
 
                 var loggedUser = db.Users.Where(user => user.Username == username && user.Password == Crypt(oldPassword) && user.Id == id).ToArray();
                 if (loggedUser.Length != 0)
                 {
                     Console.WriteLine("Нова парола:");
-
-                    string newPassword = null;
-                    int count = 0;
-                    while (true)
-                    {
-
-                        var key = Console.ReadKey();
-                        if (key.Key == ConsoleKey.Enter)
-                        {
-                            Console.WriteLine();
-                            break;
-                        }
-                        if (key.Key == ConsoleKey.Backspace && newPassword.Length > 0)
-                        {
-                            newPassword = newPassword.Remove(newPassword.Length - 1, 1);
-                            count--;
-                            Console.SetCursorPosition(count, 10);
-                            Console.Write(' ');
-                        }
-                        else
-                        {
-                            newPassword += key.KeyChar;
-                            Console.SetCursorPosition(count, 10);
-                            Console.Write('*');
-                            count++;
-                        }
-                    }
+                    string newPassword = PasswordCover(0, 10);
+                   
                     if (newPassword == oldPassword)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -386,7 +287,7 @@ namespace ConsoleApp2
         {
             Console.SetCursorPosition((Console.WindowWidth - text.Length) / 2, (Console.WindowHeight - height) / 2 + rows);
         }
-        protected static void myHandler(object sender, ConsoleCancelEventArgs args)
+        protected static void MyHandler(object sender, ConsoleCancelEventArgs args)
         {
             Console.Clear();
             string a = "Довиждане!";
@@ -396,6 +297,7 @@ namespace ConsoleApp2
             Thread.Sleep(4000);
             Environment.Exit(0);
         }
+        
         public static void PrintMenuOption(int a = -1)
         {
             string optionOne = "1) Създаване на потребител";
@@ -418,6 +320,35 @@ namespace ConsoleApp2
             Console.WriteLine(optionThree);
 
             Console.ForegroundColor = defaultColor;
+        }
+        public static string PasswordCover(int left, int top)
+        {         
+            string password = null;
+            
+            while (true)
+            {
+                var key = Console.ReadKey();
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    Console.WriteLine();
+                    break;
+                }
+                if (key.Key == ConsoleKey.Backspace && password.Length > 0)
+                {
+                    password = password.Remove(password.Length - 1, 1);
+                    left--;
+                    Console.SetCursorPosition(left, top);
+                    Console.Write(' ');
+                }
+                else
+                {
+                    password += key.KeyChar;
+                    Console.SetCursorPosition(left, top);
+                    Console.Write('*');
+                    left++;
+                }
+            }
+            return password;
         }
         public static string Crypt(string pass)
         {
