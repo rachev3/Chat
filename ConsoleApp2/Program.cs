@@ -224,6 +224,23 @@ namespace ConsoleApp2
                 Console.WriteLine(user.Username);
                 Console.SetCursorPosition(0,31); //130,31
                 Console.WriteLine($"{DateTime.Today}");
+
+                string changePass = "1) Смяна на парола";
+                CenterText(changePass, 1, 1);
+                Console.WriteLine(changePass);
+
+                ConsoleKeyInfo pressedKey;
+                do
+                {
+                    pressedKey = Console.ReadKey();
+                }
+                while (pressedKey.Key != ConsoleKey.D1);
+
+                if(pressedKey.Key == ConsoleKey.D1)
+                {
+                    ChangePassword();
+                }
+
                 Console.ReadKey();
             }
         }
