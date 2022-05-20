@@ -172,29 +172,38 @@ namespace ConsoleApp2
                 else
                 {
                     Console.Clear();
+                    PrintLoginMistakeOption();
 
-                    string text = "Бъркате потребителско име или парола.";
-                    CenterText(text, 4, 1);
-                    Console.WriteLine(text);
-
-                    CenterText(text, 4, 2);
-                    Console.WriteLine("-------------------------------------");
-
-                    CenterText(text, 4, 3);
-                    Console.WriteLine("2) Забравих паролата си.");
-
-                    CenterText(text, 4, 4);
-                    Console.WriteLine("Backspace) Опитай пак.");
-
-                    ConsoleKeyInfo click;
+                    ConsoleKeyInfo click = default;
+                    ConsoleKeyInfo pressedKey;
 
                     do
                     {
-                        click = Console.ReadKey();
-                    }
-                    while (click.Key != ConsoleKey.Backspace && click.Key != ConsoleKey.D2);
+                        Console.SetCursorPosition(0, 0);
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.CursorVisible = false;
 
-                    if (click.Key == ConsoleKey.D2)
+                        pressedKey = Console.ReadKey();
+                        Console.ForegroundColor = ConsoleColor.Gray;
+
+                        if(pressedKey.Key == ConsoleKey.D1 || pressedKey.Key == ConsoleKey.Backspace)
+                        {
+                            click = pressedKey;
+                            PrintLoginMistakeOption(click.KeyChar - 48);
+                        }
+                        else if (pressedKey.Key != ConsoleKey.Enter)
+                        {
+                            PrintLoginMistakeOption();
+                            click = default;
+                        }
+                    }
+                    while (pressedKey.Key != ConsoleKey.Enter);
+
+                    if (a == default)
+                    {
+                        throw new Exception("Не сте избрали опция.");
+                    }
+                    if (click.Key == ConsoleKey.D1)
                     {
                         ForgotenPassword();
                     }
@@ -334,6 +343,29 @@ namespace ConsoleApp2
             Console.WriteLine(optionThree);
 
             Console.ForegroundColor = defaultColor;
+        }
+        public static void PrintLoginMistakeOption(int a = -1)
+        {
+            string optionOne = "1) Забравих паролата си.";
+            string optionTwo = "Backspace) Опитай пак.";
+
+            var defaultColor = ConsoleColor.Gray;
+            var selectedColor = ConsoleColor.Cyan;
+
+            string text = "Бъркате потребителско име или парола.";
+            CenterText(text, 4, 1);
+            Console.WriteLine(text);
+
+            CenterText(text, 4, 2);
+            Console.WriteLine("-------------------------------------");
+
+            Console.ForegroundColor = a == 1 ? selectedColor : defaultColor;
+            CenterText(text, 5, 3);
+            Console.WriteLine(optionOne);
+
+            Console.ForegroundColor = a == -40 ? selectedColor : defaultColor;
+            CenterText(text, 5, 4);
+            Console.WriteLine(optionTwo);
         }
         public static string PasswordCover(int left, int top)
         {         
