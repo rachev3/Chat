@@ -106,7 +106,7 @@ namespace ConsoleApp2
                 newUser.Username = username;
 
                 Console.WriteLine("Въведете парола:");               
-                string password = PasswordCover(0,3);               
+                string password = PasswordCover(0, 3, " ");               
                 newUser.Password = Crypt(password);
 
                 Console.WriteLine("Въведете име:");
@@ -147,7 +147,7 @@ namespace ConsoleApp2
 
                 string username = Console.ReadLine();
                 CenterText(f, 5, 5);
-                string password = PasswordCover((Console.WindowWidth - f.Length) / 2,19);
+                string password = PasswordCover((Console.WindowWidth - f.Length) / 2, 19, "_");
                 
                 var a = db.Users.Where(user => user.Username == username && user.Password == Crypt(password)).ToArray();
 
@@ -290,14 +290,14 @@ namespace ConsoleApp2
                 int id = int.Parse(Console.ReadLine());
                 Console.WriteLine("Стара парола:");
 
-                string oldPassword = PasswordCover(0, 8);
+                string oldPassword = PasswordCover(0, 8, " ");
                 
 
                 var loggedUser = db.Users.Where(user => user.Username == username && user.Password == Crypt(oldPassword) && user.Id == id).ToArray();
                 if (loggedUser.Length != 0)
                 {
                     Console.WriteLine("Нова парола:");
-                    string newPassword = PasswordCover(0, 10);
+                    string newPassword = PasswordCover(0, 10, " ");
                    
                     if (newPassword == oldPassword)
                     {
@@ -384,7 +384,7 @@ namespace ConsoleApp2
             CenterText(text, 5, 4);
             Console.WriteLine(optionTwo);
         }
-        public static string PasswordCover(int left, int top)
+        public static string PasswordCover(int left, int top, string deleteIndex)
         {         
             string password = null;
             
@@ -401,7 +401,7 @@ namespace ConsoleApp2
                     password = password.Remove(password.Length - 1, 1);
                     left--;
                     Console.SetCursorPosition(left, top);
-                    Console.Write(' ');
+                    Console.Write(deleteIndex);
                 }
                 else
                 {
