@@ -143,9 +143,11 @@ namespace ConsoleApp2
                 Console.WriteLine("Парола:");
                 CenterText(f, 5, 5);
                 Console.WriteLine("".PadRight(f.Length, '_'));
-                CenterText(f, 5, 2);
 
-                string username = Console.ReadLine();
+                CenterText(f, 5, 2);
+                string username = UsernameInput((Console.WindowWidth - f.Length) / 2, 16,"_");
+                
+                
                 CenterText(f, 5, 5);
                 string password = PasswordCover((Console.WindowWidth - f.Length) / 2, 19, "_");
                 
@@ -224,24 +226,41 @@ namespace ConsoleApp2
                 Console.WriteLine(user.Username);
                 Console.SetCursorPosition(0,31); //130,31
                 Console.WriteLine($"{DateTime.Today}");
-
-                string changePass = "1) Смяна на парола";
-                CenterText(changePass, 1, 1);
-                Console.WriteLine(changePass);
-
+                                                
+                PrintAccountOptions();       
+                ConsoleKeyInfo a = default;
                 ConsoleKeyInfo pressedKey;
+
                 do
                 {
-                    pressedKey = Console.ReadKey();
-                }
-                while (pressedKey.Key != ConsoleKey.D1);
+                    Console.SetCursorPosition(13, 0);
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.CursorVisible = false;
 
-                if(pressedKey.Key == ConsoleKey.D1)
+                    pressedKey = Console.ReadKey();
+                    Console.ForegroundColor = ConsoleColor.Gray;
+
+                    if (pressedKey.Key == ConsoleKey.D1 || pressedKey.Key == ConsoleKey.D2 || pressedKey.Key == ConsoleKey.D0)
+                    {
+                        a = pressedKey;
+                        PrintAccountOptions(a.KeyChar - 48);
+                    }
+                    else if(pressedKey.Key != ConsoleKey.Enter)
+                    {
+                        PrintAccountOptions();
+                        a = default;
+                    }
+                }
+                while (pressedKey.Key != ConsoleKey.Enter);
+
+                if(a == default)
+                {
+                    throw new Exception("Не сте избрали опция.");
+                }
+                if(a.Key == ConsoleKey.D0)
                 {
                     ChangePassword();
                 }
-
-                Console.ReadKey();
             }
         }
         public static void ForgotenPassword()
@@ -361,6 +380,29 @@ namespace ConsoleApp2
 
             Console.ForegroundColor = defaultColor;
         }
+        public static void PrintAccountOptions(int a = -1)
+        {
+            string optionOne = "1) Морски шах";
+            string optionTwo = "2) Бесеница";
+            string passChange = "0) Смяна на паролата";
+
+            var defaultColor = ConsoleColor.Gray;
+            var selectedColor = ConsoleColor.Cyan;
+
+            Console.ForegroundColor = a == 1 ? selectedColor: defaultColor;
+            CenterText(optionOne, 5, 1);
+            Console.WriteLine(optionOne);
+
+            Console.ForegroundColor = a == 2 ? selectedColor : defaultColor;
+            CenterText(optionOne, 5, 2);
+            Console.WriteLine(optionTwo);
+
+            Console.ForegroundColor = a == 0 ? selectedColor : defaultColor;
+            CenterText(optionOne, 5, 3);
+            Console.WriteLine(passChange);
+
+            Console.ForegroundColor = defaultColor;
+        }
         public static void PrintLoginMistakeOption(int a = -1)
         {
             string optionOne = "1) Забравих паролата си.";
@@ -384,6 +426,7 @@ namespace ConsoleApp2
             CenterText(text, 5, 4);
             Console.WriteLine(optionTwo);
         }
+       
         public static string PasswordCover(int left, int top, string deleteIndex)
         {         
             string password = null;
@@ -403,6 +446,11 @@ namespace ConsoleApp2
                     Console.SetCursorPosition(left, top);
                     Console.Write(deleteIndex);
                 }
+                else if (key.Key == ConsoleKey.Backspace && password.Length == 0)
+                {
+                    Console.SetCursorPosition(left, top);
+                    continue;
+                }
                 else
                 {
                     password += key.KeyChar;
@@ -412,6 +460,48 @@ namespace ConsoleApp2
                 }
             }
             return password;
+        }
+        public static string UsernameInput(int left, int top, string deleteIndex)
+        {
+            string username = null;
+            while (true)
+            {
+                var key = Console.ReadKey();
+                int count = 0;
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+                if (key.Key == ConsoleKey.Backspace && username.Length > 0)
+                {
+                    username = username.Remove(username.Length - 1, 1);
+                    left--;
+                    Console.SetCursorPosition(left, top);
+                    Console.Write(deleteIndex);
+                }
+                else if(key.Key == ConsoleKey.Backspace && username.Length == 0)
+                {
+                    Console.SetCursorPosition(left, top);
+                    continue;
+                }
+                else
+                {
+                    username += key.KeyChar;
+                    if (count == 0)
+                    {
+                        Console.SetCursorPosition(left+1, top);
+                        count++;
+                        
+                    }
+                    else
+                    {
+                        Console.SetCursorPosition(left, top);
+                        
+                    }
+                    left++;
+                }
+            }
+                return username;
         }
         public static string Crypt(string pass)
         {
